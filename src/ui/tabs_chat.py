@@ -71,8 +71,8 @@ def render_chat_tab():
 
         # Mistral Judge
         if st.session_state.use_judge:
-            with st.expander("⚖️ Mistral Judge (Evaluation)"):
-                with st.spinner("Judging answer with Mistral..."):
+            with st.expander(f"⚖️ {st.session_state.judge_model} Judge (Evaluation)"):
+                with st.spinner(f"Judging answer with {st.session_state.judge_model}..."):
                     judge = mistral_judge(
                         question=question,
                         context=retrieved["context"],
