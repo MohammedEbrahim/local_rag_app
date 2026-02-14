@@ -14,38 +14,59 @@ def mistral_judge(
     """
 
     judge_prompt = f"""
-You are an expert RAG evaluator.
+You are an expert evaluator for Retrieval-Augmented Generation (RAG) systems.
 
-You will be given:
-- a QUESTION
-- a CONTEXT (retrieved chunks)
-- an ANSWER produced by the assistant
+Your task is to assess whether the provided ANSWER is relevant to the given QUESTION, based strictly on the provided CONTEXT. Do not use external knowledge. Base your evaluation only on the information explicitly available in the QUESTION and CONTEXT.
 
-Score the ANSWER strictly based on the CONTEXT.
+Definition:
+Answer relevancy measures how well the ANSWER addresses the QUESTION using information supported by the CONTEXT.
 
-Return ONLY valid JSON with these fields:
-{{
-  "faithfulness": 0-10,
-  "relevance": 0-10,
-  "completeness": 0-10,
-  "hallucination": 0-10,
-  "overall": 0-10,
-  "explanation": "short explanation"
+An answer is considered irrelevant if it:
+
+Fails to address the main intent of the QUESTION,
+
+Includes substantial information unrelated to the QUESTION,
+
+Omits key aspects required to properly answer the QUESTION (when such information exists in the CONTEXT), or
+
+Focuses on tangential details instead of the core request.
+
+Inputs:
+
+QUESTION: {question}
+
+CONTEXT (retrieved chunks): {context}
+
+ANSWER (model-generated response): {answer}
+
+Evaluation Instructions:
+
+Identify the main intent of the QUESTION.
+
+Determine whether the ANSWER directly and sufficiently addresses that intent.
+
+Check whether the ANSWER stays focused on relevant information from the CONTEXT.
+
+Ignore stylistic issues unless they impact relevance.
+
+Output Format (strictly follow this structure):
+
+{{Hallucination: Yes/No,
+Explanation: Brief explanation identifying specific unsupported or contradictory elements, if any,
+Score: Integer from 0 to 10
 }}
 
-Rules:
-- If the answer includes facts not present in context, faithfulness must be <= 3.
-- hallucination = how much the answer invents (10 = none, 0 = severe).
-- Keep explanation short.
+Scoring Guidelines:
 
-QUESTION:
-{question}
+0 = Completely irrelevant; does not address the QUESTION
 
-CONTEXT:
-{context}
+1–3 = Mostly irrelevant; minimal connection to the QUESTION
 
-ANSWER:
-{answer}
+4–6 = Partially relevant; addresses some aspects but misses key points
+
+7–9 = Mostly relevant; addresses the main intent with minor gaps
+
+10 = Fully relevant; directly and comprehensively answers the QUESTION using the CONTEXT
 """
 
     try:
