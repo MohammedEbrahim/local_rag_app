@@ -51,9 +51,10 @@ Ignore stylistic issues unless they impact relevance.
 
 Output Format (strictly follow this structure):
 
-{{Hallucination: Yes/No,
-Explanation: Brief explanation identifying specific unsupported or contradictory elements, if any,
-Score: Integer from 0 to 10
+{{
+  "Hallucination": "Yes/No",
+  "Explanation": "Brief explanation identifying specific unsupported or contradictory elements, if any",
+  "Score": 0
 }}
 
 Scoring Guidelines:
